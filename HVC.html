@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạp Hoá HVC - Dịch vụ iOS & Android</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 69, 0, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 69, 0, 0.05) 0%, transparent 20%);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 20px 0;
+            position: relative;
+            margin-bottom: 30px;
+            animation: fadeInDown 1s ease;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #ff4500;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px rgba(255, 69, 0, 0.7);
+            margin-bottom: 10px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #ff4500, transparent);
+            border-radius: 2px;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: #ccc;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        .highlight {
+            color: #ff4500;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .content {
+            display: flex;
+            flex: 1;
+            gap: 30px;
+            animation: fadeInUp 1s ease 0.3s both;
+        }
+
+        .platform-selector {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .platform-tab {
+            display: flex;
+            background: rgba(20, 20, 20, 0.8);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 18px 10px;
+            background: transparent;
+            border: none;
+            color: #aaa;
+            font-size: 1.4rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .tab-btn i {
+            font-size: 1.6rem;
+        }
+
+        .tab-btn.active {
+            background: rgba(255, 69, 0, 0.2);
+            color: #ff4500;
+            box-shadow: inset 0 0 15px rgba(255, 69, 0, 0.3);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: rgba(255, 69, 0, 0.1);
+            color: #ff884d;
+        }
+
+        .products-container {
+            flex: 2;
+            background: rgba(20, 20, 20, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+            border: 1px solid #333;
+            overflow-y: auto;
+            max-height: calc(100vh - 250px);
+        }
+
+        .products-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .products-container::-webkit-scrollbar-track {
+            background: rgba(255, 69, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .products-container::-webkit-scrollbar-thumb {
+            background: #ff4500;
+            border-radius: 10px;
+        }
+
+        .product-section {
+            display: none;
+            animation: fadeIn 0.7s ease;
+        }
+
+        .product-section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            color: #ff4500;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 69, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title i {
+            font-size: 2rem;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .product-card {
+            background: linear-gradient(145deg, rgba(30, 30, 30, 0.9), rgba(10, 10, 10, 0.9));
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.4s ease;
+            border: 1px solid #333;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(255, 69, 0, 0.2);
+            border-color: #ff4500;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 69, 0, 0.1), transparent);
+            transition: left 0.7s ease;
+        }
+
+        .product-card:hover::before {
+            left: 100%;
+        }
+
+        .product-icon {
+            font-size: 2.5rem;
+            color: #ff4500;
+            margin-bottom: 15px;
+        }
+
+        .product-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .product-desc {
+            color: #bbb;
+            line-height: 1.5;
+            font-size: 1rem;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255, 69, 0, 0.3);
+            animation: fadeIn 1s ease 0.6s both;
+        }
+
+        .contact-title {
+            font-size: 1.8rem;
+            color: #ff4500;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .contact-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .contact-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #ff4500, #ff6b35);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.4s ease;
+            box-shadow: 0 5px 15px rgba(255, 69, 0, 0.3);
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 69, 0, 0.5);
+            background: linear-gradient(45deg, #ff5500, #ff7b45);
+        }
+
+        .contact-btn i {
+            font-size: 1.5rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            color: #777;
+            font-size: 0.9rem;
+            margin-top: 20px;
+            animation: fadeIn 1s ease 0.9s both;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                text-shadow: 0 0 10px rgba(255, 69, 0, 0.7);
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(255, 69, 0, 0.9), 0 0 30px rgba(255, 69, 0, 0.5);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .content {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .products-container {
+                max-height: 50vh;
+            }
+            
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .tagline {
+                font-size: 1rem;
+            }
+            
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-btn {
+                font-size: 1.1rem;
+                padding: 15px 5px;
+            }
+            
+            .contact-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            .contact-btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1.8rem;
+            }
+            
+            .tab-btn {
+                font-size: 1rem;
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .tab-btn i {
+                font-size: 1.3rem;
+            }
+            
+            .products-container {
+                padding: 20px;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Glowing effect for active tab */
+        .tab-btn.active {
+            animation: glow 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="logo">Tạp Hoá HVC</h1>
+            <p class="tagline">Chuyên cung cấp dịch vụ <span class="highlight">iOS</span> & <span class="highlight">Android</span> cao cấp - Key crack, hack, root, ép xung và nhiều hơn thế</p>
+        </header>
+
+        <div class="content">
+            <div class="platform-selector">
+                <div class="platform-tab">
+                    <button class="tab-btn active" data-tab="ios">
+                        <i class="fab fa-apple"></i> iOS
+                    </button>
+                    <button class="tab-btn" data-tab="android">
+                        <i class="fab fa-android"></i> Android
+                    </button>
+                </div>
+                
+                <div class="contact-section">
+                    <h3 class="contact-title">Liên hệ đặt hàng</h3>
+                    <div class="contact-buttons">
+                        <a href="https://www.facebook.com/chien.hoang.1998" target="_blank" class="contact-btn">
+                            <i class="fab fa-facebook"></i> Facebook
+                        </a>
+                        <a href="https://t.me/chien137" target="_blank" class="contact-btn">
+                            <i class="fab fa-telegram"></i> Telegram
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="products-container">
+                <!-- iOS Products -->
+                <div class="product-section active" id="ios-section">
+                    <h2 class="section-title">
+                        <i class="fab fa-apple"></i> Dịch vụ iOS
+                    </h2>
+                    <div class="products-grid">
+                        <div class="product-card">
+                            <div class="product-icon">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            <h3 class="product-name">Key Lingzha4 Crack</h3>
+                            <p class="product-desc">Cung cấp key Lingzha4 bản crack đầy đủ tính năng, kích hoạt vĩnh viễn không lo hết hạn.</p>
+                        </div>
+                        
+                        <div class="product-card">
+                            <div class="product-icon">
+                                <i class="fas fa-magic"></i>
+                            </div>
+                            <h3 class="product-name">Hack iOS</h3>
+                            <p class="product-desc">Dịch vụ hack iOS chuyên sâu, mở khóa tính năng, vượt qua các giới hạn của hệ thống.</p>
+                        </div>
+                        
+                        <div class="product-card">
+                            <div class="product-icon">
+                                <i class="fas fa-unlock-alt"></i>
+                            </div>
+                            <h3 class="product-name">Jailbreak & Bypass</h3>
+                            <p class="product-desc">Jailbreak iOS mọi phiên bản, bypass iCloud, mở khoá máy bị khoá Apple ID.</p>
+                        </div>
+                        
+                        <div class="product-card">
+                            <div class="product-icon">
+                                <i class="fas fa-tools"></i>
+                            </div>
+                            <h3 class="product-name">Tùy chỉnh nâng cao</h3>
+                            <p class="product-desc">Tùy chỉnh giao diện, cài đặt tweak, theme độc quyền chỉ có trên iOS jailbreak.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Android Products -->
+                <div class="product-section" id="android-section">
+                    <h2 class="section-title">
+                        <i class="fab fa-android"></i> Dịch vụ Android
+                    </h2>
+                    <div class="products-grid">
+                        <div class="product-card">
+                            <div class="product-icon">
+                                <i class="fas fa-user-secret"></i>
+                            </div>
+                            <h3 class="product-name">Root & Ẩn Root</h3>
+                            <p class="product-desc">Root máy Android an toàn, ẩn root để sử dụng ứng dụng ngân hàng, game.</p>
+                        </div>
+                        
+                        <div class="product-card">
+                            <div class="product-icon">
+                                <i class="fas fa-tachometer-alt"></i>
+                            </div>
+                            <h3 class="product-name">Kích 2K/3K & Ép Xung</h3>
+                            <p class="product-desc">Nâng cấp màn hình lên 2K/3K, ép xung CPU/GPU để tăng hiệu năng tối đa.</p>
+                        </div>
+                        
+                        <div class="product-card">
+                            <div class="product-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3 class="product-name">Hack (Max Kernel + Aegis)</h3>
+                            <p class="product-desc">Hack kernel tối đa, tích hợp Aegis bảo mật để vừa hack vừa an toàn.</p>
+                        </div>
+                        
+                        <div class="product-card">
+                            <div class="product-icon">
+                                <i class="fas fa-gamepad"></i>
+                            </div>
+                            <h3 class="product-name">Mod Game & App</h3>
+                            <p class="product-desc">Mod game bản quyền, ứng dụng premium miễn phí, tính năng không giới hạn.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2023 Tạp Hoá HVC. Tất cả các dịch vụ được cung cấp chỉ dành cho mục đích giáo dục và nghiên cứu.</p>
+            <p>Liên hệ: Facebook - https://www.facebook.com/chien.hoang.1998 | Telegram - @chien137</p>
+        </footer>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const productSections = document.querySelectorAll('.product-section');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Remove active class from all tabs and sections
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    productSections.forEach(section => section.classList.remove('active'));
+                    
+                    // Add active class to clicked tab and corresponding section
+                    this.classList.add('active');
+                    document.getElementById(`${tabId}-section`).classList.add('active');
+                });
+            });
+            
+            // Add hover effects to product cards
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.zIndex = '10';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.zIndex = '1';
+                });
+            });
+            
+            // Add a subtle animation to the logo
+            const logo = document.querySelector('.logo');
+            setInterval(() => {
+                logo.style.animation = 'glow 2s ease';
+                setTimeout(() => {
+                    logo.style.animation = '';
+                }, 2000);
+            }, 10000);
+        });
+    </script>
+</body>
+</html>
